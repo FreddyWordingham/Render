@@ -1,11 +1,11 @@
 {
     "name": "render",
-    "version": "1.0.0",
+    "version": "0.0.0",
     "description": "Realtime ray-tracing in the browser using WGPU compute shaders",
     "main": "index.js",
     "scripts": {
         "start": "npm run install-missing-dependencies && npm run build && npm run serve",
-        "install-missing-dependencies": "npm i",
+        "install-missing-dependencies": "npm install",
         "build": "webpack --config webpack.config.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "serve": "http-server"

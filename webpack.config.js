@@ -3,7 +3,7 @@ const path = require("path");
 module.exports = {
     context: __dirname,
     mode: "development",
-    entry: "./src/hex_converter/main.ts",
+    entry: "./src/main.ts",
     output: {
         filename: "main.js",
         path: path.resolve(__dirname, "dist"),
