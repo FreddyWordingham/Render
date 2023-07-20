@@ -1,14 +1,14 @@
-export function group_binary(number) {
-    let digits = [];
+export function group_binary(number: String): String[] {
+    let digits: String[] = [];
 
-    const number_split = number.split("").reverse();
-    let group_count = (number_split.length - (number_split.length % 4)) / 4 + 1;
+    const number_split: String[] = number.split("").reverse();
+    let group_count: number = (number_split.length - (number_split.length % 4)) / 4 + 1;
     if (number_split.length % 4 == 0) {
         group_count -= 1;
     }
 
-    let group = [];
-    for (let i = 0; i < number_split.length; ++i) {
+    let group: String[] = [];
+    for (let i: number = 0; i < number_split.length; ++i) {
         group.push(number_split[i]);
         if (group.length == 4) {
             digits.push(group.reverse().join(""));
@@ -16,7 +16,7 @@ export function group_binary(number) {
         }
     }
 
-    for (let i = number_split.length; i < 4 * group_count; ++i) {
+    for (let i: number = number_split.length; i < 4 * group_count; ++i) {
         group.push("0");
         if (group.length == 4) {
             digits.push(group.reverse().join(""));

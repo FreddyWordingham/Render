@@ -1,12 +1,12 @@
-export function decimal_to_binary(number) {
+export function decimal_to_binary(number: number): String {
     if (number == 0) {
         return "0";
     }
 
-    let digits = [];
+    let digits: String[] = [];
 
     while (number > 0) {
-        let digit = String(number % 2);
+        let digit: String = String(number % 2);
         number = (number - (number % 2)) / 2;
         digits.push(digit);
     }
@@ -14,10 +14,10 @@ export function decimal_to_binary(number) {
     return digits.reverse().join("");
 }
 
-export function binary_to_hexadecimal(number) {
-    let result = 0;
+export function binary_to_hexadecimal(number: String): number {
+    let result: number = 0;
 
-    for (let i = 0; i < 4; i++) {
+    for (let i: number = 0; i < 4; i++) {
         result += Number(number[i]) * 2 ** (3 - i);
     }
 
