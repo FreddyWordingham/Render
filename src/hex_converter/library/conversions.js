@@ -1,4 +1,4 @@
-function decimal_to_binary(number) {
+export function decimal_to_binary(number) {
     if (number == 0) {
         return "0";
     }
@@ -14,7 +14,7 @@ function decimal_to_binary(number) {
     return digits.reverse().join("");
 }
 
-function binary_to_hexadecimal(number) {
+export function binary_to_hexadecimal(number) {
     let result = 0;
 
     for (let i = 0; i < 4; i++) {

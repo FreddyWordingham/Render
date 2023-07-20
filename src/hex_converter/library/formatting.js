@@ -1,4 +1,4 @@
-function group_binary(number) {
+export function group_binary(number) {
     let digits = [];
 
     const number_split = number.split("").reverse();

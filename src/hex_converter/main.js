@@ -1,4 +1,6 @@
-const hexadecimal_lookup = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
+import { HEXADECIMAL_LOOKUP } from "./library/constants/lookups.js";
+import { decimal_to_binary, binary_to_hexadecimal } from "./library/conversions.js";
+import { group_binary } from "./library/formatting.js";
 
 const decimal_input = document.getElementById("decimal_input");
 const convert_button = document.getElementById("convert_button");
@@ -8,11 +10,11 @@ const grouped_hexadecimal = document.getElementById("grouped_hexadecimal");
 const hexadecimal_output = document.getElementById("hexadecimal_output");
 
 convert_button.addEventListener("click", () => {
-    binary = decimal_to_binary(decimal_input.value);
+    const binary = decimal_to_binary(decimal_input.value);
     binary_raw.innerText = "binary: " + binary;
 
-    temp_string = "grouped: ";
-    gb = group_binary(binary);
+    let temp_string = "grouped: ";
+    const gb = group_binary(binary);
     for (let i = 0; i < gb.length; ++i) {
         temp_string += gb[i] + " ";
     }
@@ -26,7 +28,7 @@ convert_button.addEventListener("click", () => {
 
     temp_string = "final: 0x";
     for (let i = 0; i < gb.length; ++i) {
-        temp_string += String(hexadecimal_lookup[binary_to_hexadecimal(gb[i])]);
+        temp_string += String(HEXADECIMAL_LOOKUP[binary_to_hexadecimal(gb[i])]);
     }
     hexadecimal_output.innerText = temp_string;
 });
