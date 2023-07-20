@@ -15,20 +15,20 @@
             <h1>Hex-verter</h1>
             <div class="input">
                 <label for="decimal">decimal: </label>
-                <input type="text" id="decimalInput" class="decimal" />
-                <input type="submit" id="convertButton" class="decimal" value="convert to hexadecimal" />
+                <input type="text" id="decimal_input" class="decimal" />
+                <input type="submit" id="convert_button" class="decimal" value="convert to hexadecimal" onclick="click()" />
             </div>
             <div class="intermediate">
-                <p id="binary-raw">binary:</p>
+                <p id="binary_raw">binary:</p>
             </div>
             <div class="intermediate">
-                <p id="binary-grouped">grouped:</p>
+                <p id="grouped_binary">grouped:</p>
             </div>
             <div class="intermediate">
-                <p id="hexadecimal-grouped">hex (grouped):</p>
+                <p id="grouped_hexadecimal">grouped hexadecimal:</p>
             </div>
             <div class="output">
-                <p id="hexadecimal">final:</p>
+                <p id="hexadecimal_output">final:</p>
             </div>
         </div>
         <script src="programs/hex_converter/main.js"></script>
