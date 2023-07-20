@@ -1,6 +1,6 @@
-import { HEXADECIMAL_LOOKUP } from "./library/constants/lookups.ts";
-import { decimal_to_binary, binary_to_hexadecimal } from "./library/conversions.ts";
-import { group_binary } from "./library/formatting.ts";
+import { HEXADECIMAL_LOOKUP } from "./library/constants/lookups";
+import { decimal_to_binary, binary_to_hexadecimal } from "./library/conversions";
+import { group_binary } from "./library/formatting";
 
 const decimal_input = document.getElementById("decimal_input") as HTMLInputElement;
 const convert_button = document.getElementById("convert_button") as HTMLButtonElement;
