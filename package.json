@@ -4,7 +4,10 @@
     "description": "Realtime ray-tracing in the browser using WGPU compute shaders",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "npm run install-missing-dependencies",
+        "install-missing-dependencies": "npm i",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "serve": "http-server"
     },
     "keywords": [],
     "author": "",
