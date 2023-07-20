@@ -11,6 +11,26 @@
         <title>Ray-tracing</title>
     </head>
     <body>
-        Hello, world!
+        <div id="container">
+            <h1>Hex-verter</h1>
+            <div class="input">
+                <label for="decimal">decimal: </label>
+                <input type="text" id="decimalInput" class="decimal" />
+                <input type="submit" id="convertButton" class="decimal" value="convert to hexadecimal" />
+            </div>
+            <div class="intermediate">
+                <p id="binary-raw">binary:</p>
+            </div>
+            <div class="intermediate">
+                <p id="binary-grouped">grouped:</p>
+            </div>
+            <div class="intermediate">
+                <p id="hexadecimal-grouped">hex (grouped):</p>
+            </div>
+            <div class="output">
+                <p id="hexadecimal">final:</p>
+            </div>
+        </div>
+        <script src="programs/hex_converter/main.js"></script>
     </body>
 </html>
