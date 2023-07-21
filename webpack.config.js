@@ -7,12 +7,13 @@ module.exports = {
     output: {
         filename: "main.js",
         path: path.resolve(__dirname, "dist"),
+        publicPath: "/dist/",
     },
 
     module: {
         rules: [
             {
-                test: /\.ts?$/,
+                test: /\.ts$/,
                 exclude: /node_modules/,
                 use: {
                     loader: "ts-loader",
