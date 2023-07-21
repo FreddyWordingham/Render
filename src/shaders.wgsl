@@ -25,3 +25,7 @@ fn vs_main(@builtin(vertex_index) v_id: u32) -> Fragement {
     return output;
 }
  
+ @stage(fragment)
+fn fs_main(@location(0) colour: vec4<f32>) -> location(0) vec4<f32> {
+    return colour;
+}

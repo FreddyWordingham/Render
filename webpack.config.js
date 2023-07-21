@@ -19,6 +19,12 @@ module.exports = {
                     loader: "ts-loader",
                 },
             },
+            {
+                test: /\.wgsl$/,
+                use: {
+                    loader: "ts-shader-loader",
+                },
+            },
         ],
     },
 
