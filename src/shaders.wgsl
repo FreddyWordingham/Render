@@ -1,10 +1,10 @@
-struct fragment {
+struct Fragment {
     @builtin(position) Position: vec4<f32>,
     @location(0) Colour: vec4<f32>,
 };
 
-@stage(vertex)
-fn vs_main(@builtin(vertex_index) v_id: u32) -> Fragement {
+@vertex
+fn vs_main(@builtin(vertex_index) v_id: u32) -> Fragment {
 
     var positions = array<vec2<f32>, 3>(
         vec2<f32>(0.0, 0.5),
@@ -12,11 +12,11 @@ fn vs_main(@builtin(vertex_index) v_id: u32) -> Fragement {
         vec2<f32>(0.5, -0.5)
     );
 
-    var colours = array<vec3<f32>>{
+    var colours = array<vec3<f32>, 3>(
         vec3<f32>(1.0, 0.0, 0.0),
         vec3<f32>(0.0, 1.0, 0.0),
         vec3<f32>(0.0, 0.0, 1.0)
-    };
+    );
 
     var output: Fragment;
     output.Position = vec4<f32>(positions[v_id], 0.0, 1.0);
@@ -25,7 +25,7 @@ fn vs_main(@builtin(vertex_index) v_id: u32) -> Fragement {
     return output;
 }
  
- @stage(fragment)
-fn fs_main(@location(0) colour: vec4<f32>) -> location(0) vec4<f32> {
+@fragment
+fn fs_main(@location(0) colour: vec4<f32>) -> @location(0) vec4<f32> {
     return colour;
 }

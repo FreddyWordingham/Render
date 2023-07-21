@@ -1,4 +1,3 @@
-import { parseCommandLine } from "typescript";
 import shader from "./shaders.wgsl";
 
 // Initialise
@@ -15,7 +14,7 @@ const Initialise = async () => {
     const device: GPUDevice = await adapter?.requestDevice();
     const context = <GPUCanvasContext>canvas.getContext("webgpu");
     const format: GPUTextureFormat = "bgra8unorm";
-    context.configure({ device: device, format: format, compositingAlphaMode: "opaque" });
+    context.configure({ device: device, format: format });
 
     const bindGroupLayout = device.createBindGroupLayout({
         entries: [],
@@ -64,7 +63,8 @@ const Initialise = async () => {
         ],
     });
     renderPass.setPipeline(pipeline);
-    renderPass.draw(1, 1, 0, 0);
+    renderPass.setBindGroup(0, bindGroup);
+    renderPass.draw(3, 1, 0, 0);
     renderPass.end();
 
     device.queue.submit([commandEncoder.finish()]);
