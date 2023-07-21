@@ -15,7 +15,7 @@ const Initialise = async () => {
     const device: GPUDevice = await adapter?.requestDevice();
     const context = <GPUCanvasContext>canvas.getContext("webgpu");
     const format: GPUTextureFormat = "bgra8unorm";
-    context.configure({ device: device, format: format });
+    context.configure({ device: device, format: format, compositingAlphaMode: "opaque" });
 
     const bindGroupLayout = device.createBindGroupLayout({
         entries: [],
