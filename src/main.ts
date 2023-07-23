@@ -14,7 +14,7 @@ const Initialise = async () => {
     const device: GPUDevice = await adapter?.requestDevice();
     const context = <GPUCanvasContext>canvas.getContext("webgpu");
     const format: GPUTextureFormat = "bgra8unorm";
-    context.configure({ device: device, format: format });
+    context.configure({ device: device, format: format, alphaMode: "opaque" });
 
     const bindGroupLayout = device.createBindGroupLayout({
         entries: [],
@@ -23,9 +23,7 @@ const Initialise = async () => {
         layout: bindGroupLayout,
         entries: [],
     });
-    const pipelineLayout = device.createPipelineLayout({
-        bindGroupLayouts: [bindGroupLayout],
-    });
+
     const pipeline: GPURenderPipeline = device.createRenderPipeline({
         vertex: {
             module: device.createShaderModule({
@@ -47,7 +45,9 @@ const Initialise = async () => {
                 },
             ],
         },
-        layout: pipelineLayout,
+        layout: device.createPipelineLayout({
+            bindGroupLayouts: [bindGroupLayout],
+        }),
     });
 
     const commandEncoder: GPUCommandEncoder = device.createCommandEncoder();
