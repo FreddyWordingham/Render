@@ -6,7 +6,7 @@
     "scripts": {
         "start": "npm run install-missing-dependencies && npm run build && npm run serve",
         "install-missing-dependencies": "npm i",
-        "build": "webpack --config webpack.config.js",
+        "build": "rm -r dist/ && webpack --config webpack.config.js && cp -r ./resources/* ./dist",
         "serve": "live-server --cors"
     },
     "keywords": [],

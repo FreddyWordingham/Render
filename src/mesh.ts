@@ -3,27 +3,15 @@ export class Mesh {
     bufferLayout: GPUVertexBufferLayout;
 
     constructor(device: GPUDevice) {
-        // x y r g b
-        const vertices = new Float32Array([
-            0.0,
-            0.0,
-            0.5,
-            1.0,
-            0.0,
-            0.0, //
-            0.0,
-            -0.5,
-            -0.5,
-            0.0,
-            1.0,
-            0.0, //
-            0.0,
-            0.5,
-            -0.5,
-            0.0,
-            0.0,
-            1.0, //
+        // x y z u v
+        const vertices = new Float32Array(
+            [
+                0.0, 0.0, 0.5,0.5,0.0, //
+                0.0,-0.5,-0.5,0.0,1.0, //
+                0.0, 0.5,-0.5,1.0,1.0, //
         ]);
+
+        
 
         const usage: GPUBufferUsageFlags = GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST;
 
@@ -40,7 +28,7 @@ export class Mesh {
         this.buffer.unmap();
 
         this.bufferLayout = {
-            arrayStride: 6 * 4, // 6 * sizeof(float32)
+            arrayStride: 5 * 4, // 5 * sizeof(float32)
             attributes: [
                 {
                     // Position
@@ -49,9 +37,9 @@ export class Mesh {
                     offset: 0,
                 },
                 {
-                    // Colour
+                    // Texture coordinates
                     shaderLocation: 1,
-                    format: "float32x3",
+                    format: "float32x2",
                     offset: 3 * 4, // 3 * sizeof(float32)
                 },
             ],

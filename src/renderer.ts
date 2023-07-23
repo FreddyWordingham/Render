@@ -1,9 +1,11 @@
 import { mat4, vec3 } from "gl-matrix";
 
 import shader from "./shaders/basic.wgsl";
+import { Material } from "./material";
 import { Mesh } from "./mesh";
 
 export class Renderer {
+    // Output target
     canvas: HTMLCanvasElement;
 
     // Device/Context objects
@@ -19,6 +21,9 @@ export class Renderer {
 
     // Assets
     mesh!: Mesh;
+    material!: Material;
+
+    // Animation
     t: number;
 
     constructor(canvas: HTMLCanvasElement) {
@@ -28,7 +33,7 @@ export class Renderer {
 
     async Initialise() {
         await this.setupDevice();
-        this.createAssets();
+        await this.createAssets();
         await this.makePipeline();
         this.render();
     }
@@ -41,8 +46,11 @@ export class Renderer {
         this.context.configure({ device: this.device, format: this.format, alphaMode: "opaque" });
     }
 
-    createAssets() {
+    async createAssets() {
         this.mesh = new Mesh(this.device);
+        this.material = new Material();
+
+        await this.material.initialise(this.device, "dist/textures/swirl.png");
     }
 
     async makePipeline() {
@@ -58,6 +66,16 @@ export class Renderer {
                     visibility: GPUShaderStage.VERTEX,
                     buffer: {},
                 },
+                {
+                    binding: 1,
+                    visibility: GPUShaderStage.FRAGMENT,
+                    texture: {},
+                },
+                {
+                    binding: 2,
+                    visibility: GPUShaderStage.FRAGMENT,
+                    sampler: {},
+                },
             ],
         });
 
@@ -69,6 +87,14 @@ export class Renderer {
                     resource: {
                         buffer: this.uniformBuffer,
                     },
+                },
+                {
+                    binding: 1,
+                    resource: this.material.view,
+                },
+                {
+                    binding: 2,
+                    resource: this.material.sampler,
                 },
             ],
         });
