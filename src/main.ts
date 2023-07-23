@@ -1,3 +1,4 @@
+import { Mesh } from "./mesh";
 import shader from "./shaders.wgsl";
 
 // Initialise
@@ -16,6 +17,8 @@ const Initialise = async () => {
     const format: GPUTextureFormat = "bgra8unorm";
     context.configure({ device: device, format: format, alphaMode: "opaque" });
 
+    const mesh = new Mesh(device);
+
     const bindGroupLayout = device.createBindGroupLayout({
         entries: [],
     });
@@ -30,6 +33,7 @@ const Initialise = async () => {
                 code: shader,
             }),
             entryPoint: "vs_main",
+            buffers: [mesh.bufferLayout],
         },
         primitive: {
             topology: "triangle-list",
@@ -64,6 +68,7 @@ const Initialise = async () => {
     });
     renderPass.setPipeline(pipeline);
     renderPass.setBindGroup(0, bindGroup);
+    renderPass.setVertexBuffer(0, mesh.buffer);
     renderPass.draw(3, 1, 0, 0);
     renderPass.end();
 
