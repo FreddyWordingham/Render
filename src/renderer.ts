@@ -103,8 +103,8 @@ export class Renderer {
         });
     }
 
-    render() {
-        this.t += 0.1;
+    render = () => {
+        this.t += 0.01;
         if (this.t >= 2.0 * Math.PI) {
             this.t -= 2.0 * Math.PI;
         }
@@ -156,5 +156,7 @@ export class Renderer {
         renderPass.end();
 
         this.device.queue.submit([commandEncoder.finish()]);
-    }
+
+        requestAnimationFrame(this.render);
+    };
 }
