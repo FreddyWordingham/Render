@@ -1,12 +1,9 @@
-import { TIMEOUT } from "dns";
 import { App } from "./controller/app";
 
 // Check if WebGPU is supported
 const output_label: HTMLElement = document.getElementById("output_label")!;
-if (navigator.gpu) {
-    output_label.innerText = "WebGPU is supported!";
-} else {
-    output_label.innerText = "WebGPU is NOT supported.";
+if (!navigator.gpu) {
+    output_label.style.display = "block";
 }
 
 async function init() {
