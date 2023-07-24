@@ -1,4 +1,4 @@
-import { Renderer } from "./controller/renderer";
+import { Renderer } from "./view/renderer";
 
 // Initialise
 const output_label: HTMLElement = document.getElementById("output_label")!;

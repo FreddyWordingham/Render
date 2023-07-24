@@ -1,6 +1,6 @@
 import { mat4, vec3 } from "gl-matrix";
 
-import { Camera } from "../view/camera";
+import { Camera } from "./camera";
 import { Material } from "../model/material";
 import { Mesh } from "../model/mesh";
 import { Transform } from "../model/transform";
