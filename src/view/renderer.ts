@@ -33,7 +33,7 @@ export class Renderer {
         this.t = 0.0;
     }
 
-    async Initialise() {
+    async init() {
         await this.setupDevice();
         await this.createAssets();
         await this.makePipeline();
@@ -51,7 +51,7 @@ export class Renderer {
         this.mesh = new Mesh(this.device);
         this.material = new Material();
 
-        await this.material.initialise(this.device, "dist/textures/swirl.png");
+        await this.material.init(this.device, "dist/textures/swirl.png");
     }
 
     async makePipeline() {

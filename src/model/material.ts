@@ -3,7 +3,7 @@ export class Material {
     view!: GPUTextureView;
     sampler!: GPUSampler;
 
-    async initialise(device: GPUDevice, url: string) {
+    async init(device: GPUDevice, url: string) {
         const response = await fetch(url);
         const blob: Blob = await response.blob();
         const imageBitmap: ImageBitmap = await createImageBitmap(blob);
