@@ -1,6 +1,4 @@
-import { vec3, mat4 } from "gl-matrix";
-
-import { Camera } from "./camera";
+import { Camera } from "../view/camera";
 import { Transformation } from "./transformation";
 
 export class Scene {

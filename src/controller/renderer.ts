@@ -1,8 +1,8 @@
 import { mat4, vec3 } from "gl-matrix";
 
-import shader from "./shaders/basic.wgsl";
-import { Material } from "./material";
-import { Mesh } from "./mesh";
+import { Material } from "../model/material";
+import { Mesh } from "../model/mesh";
+import shader from "../shaders/basic.wgsl";
 
 export class Renderer {
     // Output target

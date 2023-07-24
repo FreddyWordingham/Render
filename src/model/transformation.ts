@@ -1,6 +1,6 @@
 import { vec3, mat4 } from "gl-matrix";
 
-import { degToRad } from "./../utility";
+import { degToRad } from "../utility/math";
 
 export class Transformation {
     position: vec3;
