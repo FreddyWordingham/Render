@@ -2,7 +2,7 @@ import { vec3, mat4 } from "gl-matrix";
 
 import { degToRad } from "../utility/math";
 
-export class Transformation {
+export class Transform {
     position: vec3;
     eulers: vec3; // Rotations in degrees around x, y, z
     model: mat4;

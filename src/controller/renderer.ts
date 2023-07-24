@@ -1,7 +1,9 @@
 import { mat4, vec3 } from "gl-matrix";
 
+import { Camera } from "../view/camera";
 import { Material } from "../model/material";
 import { Mesh } from "../model/mesh";
+import { Transform } from "../model/transform";
 import shader from "../shaders/basic.wgsl";
 
 export class Renderer {
@@ -35,7 +37,6 @@ export class Renderer {
         await this.setupDevice();
         await this.createAssets();
         await this.makePipeline();
-        this.render();
     }
 
     async setupDevice() {
@@ -129,7 +130,7 @@ export class Renderer {
         });
     }
 
-    render = () => {
+    render = (camera: Camera, transforms: Transform[]) => {
         this.t += 0.01;
         if (this.t >= 2.0 * Math.PI) {
             this.t -= 2.0 * Math.PI;
@@ -143,18 +144,13 @@ export class Renderer {
         const far_clip = 100.0;
         mat4.perspective(projection, fovy, aspect_ratio, near_clip, far_clip);
 
-        const view = mat4.create();
-        const eye: vec3 = [-2.0, 0.0, 1.0];
-        const centre: vec3 = [0.0, 0.0, 0.0];
-        const up: vec3 = [0.0, 0.0, 1.0];
-        mat4.lookAt(view, eye, centre, up);
+        const view = camera.get_view();
 
         const model = mat4.create();
         const rotation = this.t;
         const axis: vec3 = [0.0, 0.0, 1.0];
         mat4.rotate(model, model, rotation, axis);
 
-        this.device.queue.writeBuffer(this.uniformBuffer, 64 * 0, <ArrayBuffer>model);
         this.device.queue.writeBuffer(this.uniformBuffer, 64 * 1, <ArrayBuffer>view);
         this.device.queue.writeBuffer(this.uniformBuffer, 64 * 2, <ArrayBuffer>projection);
 
@@ -177,12 +173,14 @@ export class Renderer {
         });
         renderPass.setPipeline(this.pipeline);
         renderPass.setVertexBuffer(0, this.mesh.buffer);
-        renderPass.setBindGroup(0, this.bindGroup);
-        renderPass.draw(3, 1, 0, 0);
+        transforms.forEach((transform) => {
+            const model = transform.get_model();
+            this.device.queue.writeBuffer(this.uniformBuffer, 0, <ArrayBuffer>model);
+            renderPass.setBindGroup(0, this.bindGroup);
+            renderPass.draw(3, 1, 0, 0);
+        });
         renderPass.end();
 
         this.device.queue.submit([commandEncoder.finish()]);
-
-        requestAnimationFrame(this.render);
     };
 }

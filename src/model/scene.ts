@@ -1,21 +1,23 @@
 import { Camera } from "../view/camera";
-import { Transformation } from "./transformation";
+import { Transform } from "./transform";
 
 export class Scene {
-    transformations: Transformation[];
+    transforms: Transform[];
     cameras: Camera[];
 
     constructor() {
-        // Transformations
-        this.transformations = [new Transformation([2, 0, 0], 0)];
+        // Transforms
+        this.transforms = [];
+        this.transforms.push(new Transform([2, 0, 0], 0));
 
         // Cameras
-        this.cameras = [new Camera([-2, 0, 0.5], 0, 0)];
+        this.cameras = [];
+        this.cameras.push(new Camera([-2, 0, 0.5], 0, 0));
     }
 
     update() {
-        this.transformations.forEach((transformation) => {
-            transformation.update();
+        this.transforms.forEach((transform) => {
+            transform.update();
         });
 
         this.cameras.forEach((camera) => {
@@ -27,7 +29,7 @@ export class Scene {
         return this.cameras[0];
     }
 
-    get_transformations(): Transformation[] {
-        return this.transformations;
+    get_transforms(): Transform[] {
+        return this.transforms;
     }
 }
