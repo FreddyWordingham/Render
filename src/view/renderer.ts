@@ -130,7 +130,7 @@ export class Renderer {
         });
     }
 
-    render = (camera: Camera, transforms: Transform[]) => {
+    render(camera: Camera, transforms: Transform[]) {
         this.t += 0.01;
         if (this.t >= 2.0 * Math.PI) {
             this.t -= 2.0 * Math.PI;
@@ -182,5 +182,5 @@ export class Renderer {
         renderPass.end();
 
         this.device.queue.submit([commandEncoder.finish()]);
-    };
+    }
 }
