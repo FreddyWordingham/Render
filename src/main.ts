@@ -1,4 +1,5 @@
-import { Renderer } from "./view/renderer";
+import { TIMEOUT } from "dns";
+import { App } from "./controller/app";
 
 // Check if WebGPU is supported
 const output_label: HTMLElement = document.getElementById("output_label")!;
@@ -8,10 +9,14 @@ if (navigator.gpu) {
     output_label.innerText = "WebGPU is NOT supported.";
 }
 
-const init = async () => {
+async function init() {
     const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("gfx_main");
-    const renderer = new Renderer(canvas);
-    renderer.init();
-};
+    const app = new App(canvas);
+    const start = Date.now();
+    await app.init();
+    const elapsed = Date.now() - start;
+    console.log(`Initialised in ${elapsed}ms`);
+    app.run();
+}
 
 init();

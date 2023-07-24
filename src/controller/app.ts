@@ -18,6 +18,7 @@ export class App {
 
     run = () => {
         let running: boolean = true;
+
         this.scene.update();
 
         let camera = this.scene.get_player_camera();

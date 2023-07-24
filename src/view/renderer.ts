@@ -49,8 +49,8 @@ export class Renderer {
 
     async createAssets() {
         this.mesh = new Mesh(this.device);
-        this.material = new Material();
 
+        this.material = new Material();
         await this.material.init(this.device, "dist/textures/swirl.png");
     }
 
