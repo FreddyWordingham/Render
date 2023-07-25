@@ -31,4 +31,6 @@ export class App {
             requestAnimationFrame(this.run);
         }
     };
+
+    handle_keypress = (event: KeyboardEvent) => {};
 }
