@@ -12,6 +12,7 @@ export class App {
     mouse_x_label: HTMLElement;
     mouse_y_label: HTMLElement;
 
+    speed: number = 0.1;
     forwards_amount: number = 0;
     right_amount: number = 0;
 
@@ -56,8 +57,6 @@ export class App {
                 this.right_amount = 1;
                 break;
         }
-
-        console.log(this.forwards_amount, this.right_amount);
     }
 
     handle_key_release(event: JQuery.KeyUpEvent) {
@@ -77,8 +76,6 @@ export class App {
                 this.right_amount = 0;
                 break;
         }
-
-        console.log(this.forwards_amount, this.right_amount);
     }
 
     handle_mouse_move(event: JQuery.MouseMoveEvent) {
@@ -92,7 +89,7 @@ export class App {
         let running: boolean = true;
 
         this.scene.update();
-        this.scene.move_player_camera(this.forwards_amount, this.right_amount);
+        this.scene.move_player_camera(this.forwards_amount * this.speed, this.right_amount * this.speed);
 
         let camera = this.scene.get_player_camera();
         this.renderer.render(camera, this.scene.get_transforms());
