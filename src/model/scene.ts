@@ -31,7 +31,7 @@ export class Scene {
         this.cameras[0].eulers[2] -= d_theta;
         this.cameras[0].eulers[2] %= 360;
 
-        this.cameras[0].eulers[1] -= Math.min(89, Math.max(-89, this.cameras[0].eulers[1] + d_phi));
+        this.cameras[0].eulers[1] = Math.min(89, Math.max(-89, this.cameras[0].eulers[1] - d_phi));
     }
 
     move_player_camera(distance: number, strife: number) {

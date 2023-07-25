@@ -15,6 +15,7 @@ export class App {
     speed: number = 0.1;
     forwards_amount: number = 0;
     right_amount: number = 0;
+    spin_rate: number = 0.5;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -31,6 +32,9 @@ export class App {
 
         this.mouse_x_label = <HTMLElement>$("#mouse_x_label")[0];
         this.mouse_y_label = <HTMLElement>$("#mouse_y_label")[0];
+        this.canvas.onclick = () => {
+            this.canvas.requestPointerLock();
+        };
         $(document).on("mousemove", (event) => {
             this.handle_mouse_move(event);
         });
@@ -81,8 +85,20 @@ export class App {
     handle_mouse_move(event: JQuery.MouseMoveEvent) {
         const rect = this.canvas.getBoundingClientRect();
 
-        this.mouse_x_label.innerHTML = String((event.pageX - rect.left) / this.canvas.width);
-        this.mouse_y_label.innerHTML = String(1.0 - (event.pageY - rect.top) / this.canvas.height);
+        const viewport_x = (event.pageX - rect.left) / this.canvas.width;
+        const viewport_y = 1.0 - (event.pageY - rect.top) / this.canvas.height;
+        const x = viewport_x * 2.0 - 1.0;
+        const y = viewport_y * 2.0 - 1.0;
+        // this.mouse_x_label.innerHTML = String(x);
+        // this.mouse_y_label.innerHTML = String(y);
+
+        const originalEvent = event.originalEvent as MouseEvent;
+        const vel_x = originalEvent.movementX;
+        const vel_y = originalEvent.movementY;
+        this.mouse_x_label.innerHTML = String(vel_x);
+        this.mouse_y_label.innerHTML = String(vel_y);
+
+        this.scene.spin_player_camera(vel_x * this.spin_rate, vel_y * this.spin_rate);
     }
 
     run = () => {
