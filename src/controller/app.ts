@@ -1,15 +1,18 @@
 import { Renderer } from "../view/renderer";
 import { Scene } from "../model/scene";
+import { HUD } from "./hud";
 
 export class App {
     canvas: HTMLCanvasElement;
     renderer: Renderer;
     scene: Scene;
+    hud: HUD;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.renderer = new Renderer(canvas);
         this.scene = new Scene();
+        this.hud = new HUD();
     }
 
     async init() {
