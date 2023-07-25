@@ -1,12 +1,14 @@
+import $ from "jquery";
+
 export class HUD {
     key_label: HTMLElement;
     mouse_x_label: HTMLElement;
     mouse_y_label: HTMLElement;
 
     constructor() {
-        this.key_label = <HTMLElement>document.getElementById("key_label");
-        this.mouse_x_label = <HTMLElement>document.getElementById("mouse_x_label");
-        this.mouse_y_label = <HTMLElement>document.getElementById("mouse_y_label");
+        this.key_label = $("#key_label")[0];
+        this.mouse_x_label = $("#mouse_x_label")[0];
+        this.mouse_y_label = $("#mouse_y_label")[0];
     }
 
     handle_keypress(event: JQuery.KeyPressEvent) {

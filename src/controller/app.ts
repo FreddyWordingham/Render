@@ -1,3 +1,5 @@
+import $ from "jquery";
+
 import { Renderer } from "../view/renderer";
 import { Scene } from "../model/scene";
 import { HUD } from "./hud";
