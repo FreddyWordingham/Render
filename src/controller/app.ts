@@ -12,14 +12,20 @@ export class App {
     mouse_x_label: HTMLElement;
     mouse_y_label: HTMLElement;
 
+    forwards_amount: number = 0;
+    right_amount: number = 0;
+
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.renderer = new Renderer(canvas);
         this.scene = new Scene();
 
         this.key_label = <HTMLElement>$("#key_label")[0];
-        $(document).on("keypress", (event) => {
+        $(document).on("keydown", (event) => {
             this.handle_key_press(event);
+        });
+        $(document).on("keyup", (event) => {
+            this.handle_key_release(event);
         });
 
         this.mouse_x_label = <HTMLElement>$("#mouse_x_label")[0];
@@ -33,8 +39,46 @@ export class App {
         await this.renderer.init();
     }
 
-    handle_key_press(event: JQuery.KeyPressEvent) {
+    handle_key_press(event: JQuery.KeyDownEvent) {
         this.key_label.innerHTML = event.code;
+
+        switch (event.code) {
+            case "KeyW":
+                this.forwards_amount = 1;
+                break;
+            case "KeyS":
+                this.forwards_amount = -1;
+                break;
+            case "KeyA":
+                this.right_amount = -1;
+                break;
+            case "KeyD":
+                this.right_amount = 1;
+                break;
+        }
+
+        console.log(this.forwards_amount, this.right_amount);
+    }
+
+    handle_key_release(event: JQuery.KeyUpEvent) {
+        this.key_label.innerHTML = event.code;
+
+        switch (event.code) {
+            case "KeyW":
+                this.forwards_amount = 0;
+                break;
+            case "KeyS":
+                this.forwards_amount = 0;
+                break;
+            case "KeyA":
+                this.right_amount = 0;
+                break;
+            case "KeyD":
+                this.right_amount = 0;
+                break;
+        }
+
+        console.log(this.forwards_amount, this.right_amount);
     }
 
     handle_mouse_move(event: JQuery.MouseMoveEvent) {
@@ -48,6 +92,7 @@ export class App {
         let running: boolean = true;
 
         this.scene.update();
+        this.scene.move_player_camera(this.forwards_amount, this.right_amount);
 
         let camera = this.scene.get_player_camera();
         this.renderer.render(camera, this.scene.get_transforms());
