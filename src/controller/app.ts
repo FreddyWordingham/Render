@@ -13,6 +13,8 @@ export class App {
         this.renderer = new Renderer(canvas);
         this.scene = new Scene();
         this.hud = new HUD();
+
+        $(document).on("keypress", this.handle_keypress);
     }
 
     async init() {
@@ -32,5 +34,7 @@ export class App {
         }
     };
 
-    handle_keypress = (event: KeyboardEvent) => {};
+    handle_keypress = (event: JQuery.KeyPressEvent) => {
+        this.hud.handle_keypress(event);
+    };
 }
