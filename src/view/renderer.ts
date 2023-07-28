@@ -3,7 +3,6 @@ import { mat4, vec3 } from "gl-matrix";
 import { Camera } from "./camera";
 import { Material } from "../model/material";
 import { Mesh } from "../model/mesh";
-import { Transform } from "../model/transform";
 import shader from "../shaders/basic.wgsl";
 
 export class Renderer {
@@ -24,18 +23,15 @@ export class Renderer {
     // Assets
     mesh!: Mesh;
     material!: Material;
-
-    // Animation
-    t: number;
+    objectBuffer!: GPUBuffer;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
-        this.t = 0.0;
     }
 
-    async init() {
+    async init(num_models: number) {
         await this.setupDevice();
-        await this.createAssets();
+        await this.createAssets(num_models);
         await this.makePipeline();
     }
 
@@ -47,16 +43,24 @@ export class Renderer {
         this.context.configure({ device: this.device, format: this.format, alphaMode: "opaque" });
     }
 
-    async createAssets() {
+    async createAssets(num_models: number) {
         this.mesh = new Mesh(this.device);
 
         this.material = new Material();
+
+        const model_size = 64; // a single 4x4 matrix * (f32 == 4 bytes)
+        const modelBufferDescriptor: GPUBufferDescriptor = {
+            size: model_size * num_models,
+            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+        };
+        this.objectBuffer = this.device.createBuffer(modelBufferDescriptor);
+
         await this.material.init(this.device, "dist/textures/swirl.png");
     }
 
     async makePipeline() {
         this.uniformBuffer = this.device.createBuffer({
-            size: 3 * 16 * 4, // three 4x4 matricies * (f32 == 4 bytes)
+            size: 2 * 64, // two 4x4 matricies * (f32 == 4 bytes)
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
@@ -77,6 +81,14 @@ export class Renderer {
                     visibility: GPUShaderStage.FRAGMENT,
                     sampler: {},
                 },
+                {
+                    binding: 3,
+                    visibility: GPUShaderStage.VERTEX,
+                    buffer: {
+                        type: "read-only-storage",
+                        hasDynamicOffset: false,
+                    },
+                },
             ],
         });
 
@@ -96,6 +108,12 @@ export class Renderer {
                 {
                     binding: 2,
                     resource: this.material.sampler,
+                },
+                {
+                    binding: 3,
+                    resource: {
+                        buffer: this.objectBuffer,
+                    },
                 },
             ],
         });
@@ -130,12 +148,7 @@ export class Renderer {
         });
     }
 
-    render(camera: Camera, transforms: Transform[]) {
-        this.t += 0.01;
-        if (this.t >= 2.0 * Math.PI) {
-            this.t -= 2.0 * Math.PI;
-        }
-
+    render(camera: Camera, transforms: Float32Array, models_count: number) {
         // MVP
         const projection = mat4.create();
         const fovy = (45.0 * Math.PI) / 180.0;
@@ -146,13 +159,9 @@ export class Renderer {
 
         const view = camera.get_view();
 
-        const model = mat4.create();
-        const rotation = this.t;
-        const axis: vec3 = [0.0, 0.0, 1.0];
-        mat4.rotate(model, model, rotation, axis);
-
-        this.device.queue.writeBuffer(this.uniformBuffer, 64 * 1, <ArrayBuffer>view);
-        this.device.queue.writeBuffer(this.uniformBuffer, 64 * 2, <ArrayBuffer>projection);
+        this.device.queue.writeBuffer(this.objectBuffer, 0, transforms, 0, transforms.length);
+        this.device.queue.writeBuffer(this.uniformBuffer, 64 * 0, <ArrayBuffer>view);
+        this.device.queue.writeBuffer(this.uniformBuffer, 64 * 1, <ArrayBuffer>projection);
 
         // Records draw commands for submission to GPU
         const commandEncoder: GPUCommandEncoder = this.device.createCommandEncoder();
@@ -173,12 +182,8 @@ export class Renderer {
         });
         renderPass.setPipeline(this.pipeline);
         renderPass.setVertexBuffer(0, this.mesh.buffer);
-        transforms.forEach((transform) => {
-            const model = transform.get_model();
-            this.device.queue.writeBuffer(this.uniformBuffer, 0, <ArrayBuffer>model);
-            renderPass.setBindGroup(0, this.bindGroup);
-            renderPass.draw(3, 1, 0, 0);
-        });
+        renderPass.setBindGroup(0, this.bindGroup);
+        renderPass.draw(3, models_count, 0, 0);
         renderPass.end();
 
         this.device.queue.submit([commandEncoder.finish()]);

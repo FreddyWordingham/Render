@@ -15,12 +15,13 @@ export class App {
     speed: number = 0.1;
     forwards_amount: number = 0;
     right_amount: number = 0;
+    upwards_amount: number = 0;
     spin_rate: number = 0.5;
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor(canvas: HTMLCanvasElement, num_models: number) {
         this.canvas = canvas;
         this.renderer = new Renderer(canvas);
-        this.scene = new Scene();
+        this.scene = new Scene(num_models);
 
         this.key_label = <HTMLElement>$("#key_label")[0];
         $(document).on("keydown", (event) => {
@@ -40,8 +41,8 @@ export class App {
         });
     }
 
-    async init() {
-        await this.renderer.init();
+    async init(num_models: number) {
+        await this.renderer.init(num_models);
     }
 
     handle_key_press(event: JQuery.KeyDownEvent) {
@@ -59,6 +60,12 @@ export class App {
                 break;
             case "KeyD":
                 this.right_amount = 1;
+                break;
+            case "KetE":
+                this.upwards_amount = 1;
+                break;
+            case "KeyQ":
+                this.upwards_amount = -1;
                 break;
         }
     }
@@ -78,6 +85,12 @@ export class App {
                 break;
             case "KeyD":
                 this.right_amount = 0;
+                break;
+            case "KeyE":
+                this.upwards_amount = 0;
+                break;
+            case "KeyQ":
+                this.upwards_amount = 0;
                 break;
         }
     }
@@ -105,10 +118,10 @@ export class App {
         let running: boolean = true;
 
         this.scene.update();
-        this.scene.move_player_camera(this.forwards_amount * this.speed, this.right_amount * this.speed);
+        this.scene.move_player_camera(this.forwards_amount * this.speed, this.right_amount * this.speed, this.upwards_amount * this.speed);
 
         let camera = this.scene.get_player_camera();
-        this.renderer.render(camera, this.scene.get_transforms());
+        this.renderer.render(camera, this.scene.get_transforms(), this.scene.model_count);
 
         if (running) {
             requestAnimationFrame(this.run);
