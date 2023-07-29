@@ -20,6 +20,12 @@ export class Renderer {
     bindGroup!: GPUBindGroup;
     pipeline!: GPURenderPipeline;
 
+    // Depth stencil
+    depthStencilState!: GPUDepthStencilState;
+    depthStencilBuffer!: GPUTexture;
+    depthStencilView!: GPUTextureView;
+    depthStencilAttachment!: GPURenderPassDepthStencilAttachment;
+
     // Assets
     mesh!: Mesh;
     material!: Material;
@@ -31,6 +37,7 @@ export class Renderer {
 
     async init(num_models: number) {
         await this.setupDevice();
+        await this.createResources();
         await this.createAssets(num_models);
         await this.makePipeline();
     }
@@ -41,6 +48,43 @@ export class Renderer {
         this.context = <GPUCanvasContext>this.canvas.getContext("webgpu");
         this.format = <GPUTextureFormat>"bgra8unorm";
         this.context.configure({ device: this.device, format: this.format, alphaMode: "opaque" });
+    }
+
+    async createResources() {
+        // Depth stencil
+        this.depthStencilState = {
+            format: "depth24plus-stencil8",
+            depthWriteEnabled: true,
+            depthCompare: "less-equal",
+        };
+
+        const depthBufferDescriptor: GPUTextureDescriptor = {
+            size: {
+                width: this.canvas.width,
+                height: this.canvas.height,
+                depthOrArrayLayers: 1,
+            },
+            format: this.depthStencilState.format,
+            usage: GPUTextureUsage.RENDER_ATTACHMENT,
+        };
+        this.depthStencilBuffer = this.device.createTexture(depthBufferDescriptor);
+
+        const depthBufferViewDescriptor: GPUTextureViewDescriptor = {
+            format: this.depthStencilState.format,
+            dimension: "2d",
+            aspect: "all",
+        };
+
+        this.depthStencilView = this.depthStencilBuffer.createView(depthBufferViewDescriptor);
+        this.depthStencilAttachment = {
+            view: this.depthStencilView,
+            depthClearValue: 1.0,
+            depthLoadOp: "clear",
+            depthStoreOp: "store",
+
+            stencilLoadOp: "clear",
+            stencilStoreOp: "discard",
+        };
     }
 
     async createAssets(num_models: number) {
@@ -145,6 +189,7 @@ export class Renderer {
                 ],
             },
             layout: pipelineLayout,
+            depthStencil: this.depthStencilState,
         });
     }
 
@@ -179,6 +224,7 @@ export class Renderer {
                     storeOp: "store",
                 },
             ],
+            depthStencilAttachment: this.depthStencilAttachment,
         });
         renderPass.setPipeline(this.pipeline);
         renderPass.setVertexBuffer(0, this.mesh.buffer);
