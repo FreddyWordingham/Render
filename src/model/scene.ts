@@ -17,15 +17,17 @@ export class Scene {
         // Transforms
         this.transforms = [];
 
-        const number_per_side = 5;
-        for (let y = -number_per_side; y < number_per_side; ++y) {
-            this.transforms.push(new Transform([2, y, 0], 0));
+        const number_per_side = 9;
+        for (let x = -number_per_side; x < number_per_side; ++x) {
+            for (let y = -number_per_side; y < number_per_side; ++y) {
+                this.transforms.push(new Transform([x, y, 0], 0));
 
-            let blank_mat = mat4.create();
-            for (let i = 0; i < 16; ++i) {
-                this.object_data[16 * this.model_count + i] = <number>blank_mat.at(i);
+                let blank_mat = mat4.create();
+                for (let i = 0; i < 16; ++i) {
+                    this.object_data[16 * this.model_count + i] = <number>blank_mat.at(i);
+                }
+                this.model_count += 1;
             }
-            this.model_count += 1;
         }
 
         // Cameras

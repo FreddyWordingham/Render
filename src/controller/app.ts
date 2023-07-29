@@ -61,7 +61,7 @@ export class App {
             case "KeyD":
                 this.right_amount = 1;
                 break;
-            case "KetE":
+            case "KeyE":
                 this.upwards_amount = 1;
                 break;
             case "KeyQ":
