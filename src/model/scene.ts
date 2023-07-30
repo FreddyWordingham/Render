@@ -109,7 +109,6 @@ export class Scene {
         vec3.scaleAndAdd(this.cameras[0].position, this.cameras[0].position, this.cameras[0].forwards, distance);
         vec3.scaleAndAdd(this.cameras[0].position, this.cameras[0].position, this.cameras[0].right, strife);
         vec3.scaleAndAdd(this.cameras[0].position, this.cameras[0].position, this.cameras[0].up, upwards);
-        console.log(upwards);
     }
 
     get_player_camera(): Camera {

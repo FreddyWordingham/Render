@@ -89,7 +89,12 @@ export class ObjMesh {
 
                 for (let n = 0; n < tri_count; ++n) {
                     for (let i = 0; i < 3; ++i) {
-                        const parts = tokens[1 + n + i].split("/");
+                        let x = 1 + n + i;
+                        if (i === 0) {
+                            x = 1;
+                        }
+
+                        const parts = tokens[x].split("/");
                         const v = this.v[parseInt(parts[0]) - 1];
                         const vt = this.vt[parseInt(parts[1]) - 1];
                         const vn = this.vn[parseInt(parts[2]) - 1];

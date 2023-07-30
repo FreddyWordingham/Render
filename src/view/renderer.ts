@@ -135,7 +135,7 @@ export class Renderer {
         this.tri_mesh = new TriMesh(this.device);
         this.quad_mesh = new QuadMesh(this.device);
         this.obj_mesh = new ObjMesh();
-        await this.obj_mesh.init(this.device, "dist/models/square.obj");
+        await this.obj_mesh.init(this.device, "dist/models/floor.obj");
 
         this.tri_material = new Material();
         this.quad_material = new Material();
