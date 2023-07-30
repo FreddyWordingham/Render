@@ -2,6 +2,7 @@ import { mat4 } from "gl-matrix";
 
 import { Material } from "../model/material";
 import { ObjectKinds, RenderData } from "../model/definitions";
+import { ObjMesh } from "../model/obj_mesh";
 import { QuadMesh } from "../model/quad_mesh";
 import { TriMesh } from "../model/tri_mesh";
 import shader from "../shaders/basic.wgsl";
@@ -32,6 +33,7 @@ export class Renderer {
     // Assets
     tri_mesh!: TriMesh;
     quad_mesh!: TriMesh;
+    obj_mesh!: ObjMesh;
     tri_material!: Material;
     quad_material!: Material;
     objectBuffer!: GPUBuffer;
@@ -132,6 +134,8 @@ export class Renderer {
     async createAssets(num_models: number) {
         this.tri_mesh = new TriMesh(this.device);
         this.quad_mesh = new QuadMesh(this.device);
+        this.obj_mesh = new ObjMesh();
+        await this.obj_mesh.init(this.device, "dist/models/square.obj");
 
         this.tri_material = new Material();
         this.quad_material = new Material();
@@ -280,6 +284,12 @@ export class Renderer {
         renderPass.setBindGroup(1, this.quad_material.bindGroup);
         renderPass.draw(6, renderables.object_counts[ObjectKinds.QUAD], 0, objects_drawn);
         objects_drawn += renderables.object_counts[ObjectKinds.QUAD];
+
+        // Objects
+        renderPass.setVertexBuffer(0, this.obj_mesh.buffer);
+        renderPass.setBindGroup(1, this.tri_material.bindGroup);
+        renderPass.draw(this.obj_mesh.vertex_count, 1, 0, objects_drawn);
+        objects_drawn += 1;
 
         renderPass.end();
 

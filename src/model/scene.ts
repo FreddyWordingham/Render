@@ -3,22 +3,25 @@ import { mat4, vec3 } from "gl-matrix";
 import { Camera } from "../view/camera";
 import { ObjectKinds, RenderData } from "./definitions";
 import { Quad } from "./quad";
+import { Statue } from "./statue";
 import { Tri } from "./tri";
 
 export class Scene {
     tris: Tri[];
     quads: Quad[];
+    statue: Statue;
     cameras: Camera[];
     object_data: Float32Array;
 
     constructor(num_models: number) {
         this.tris = [];
         this.quads = [];
-        this.object_data = new Float32Array(16 * num_models);
+        this.object_data = new Float32Array(16 * num_models); // 16 floats per model (one 4x4 matrix)
 
         // Objects
         this.init_triangles();
         this.init_quadrangles();
+        this.statue = new Statue([0, 0, 0], [0, 0, 0]);
 
         // Cameras
         this.cameras = [];
@@ -83,6 +86,13 @@ export class Scene {
             entity_index += 1;
         });
 
+        this.statue.update();
+        let model = this.statue.get_model();
+        for (let x = 0; x < 16; ++x) {
+            this.object_data[16 * entity_index + x] = <number>model.at(x);
+        }
+        entity_index += 1;
+
         this.cameras.forEach((camera) => {
             camera.update();
         });
@@ -99,6 +109,7 @@ export class Scene {
         vec3.scaleAndAdd(this.cameras[0].position, this.cameras[0].position, this.cameras[0].forwards, distance);
         vec3.scaleAndAdd(this.cameras[0].position, this.cameras[0].position, this.cameras[0].right, strife);
         vec3.scaleAndAdd(this.cameras[0].position, this.cameras[0].position, this.cameras[0].up, upwards);
+        console.log(upwards);
     }
 
     get_player_camera(): Camera {
