@@ -121,7 +121,7 @@ export class App {
         this.scene.move_player_camera(this.forwards_amount * this.speed, this.right_amount * this.speed, this.upwards_amount * this.speed);
 
         let camera = this.scene.get_player_camera();
-        this.renderer.render(camera, this.scene.get_transforms(), this.scene.model_count);
+        this.renderer.render(this.scene.get_renderables());
 
         if (running) {
             requestAnimationFrame(this.run);

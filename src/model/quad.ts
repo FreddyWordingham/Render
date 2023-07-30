@@ -4,7 +4,7 @@ export class Quad {
     position: vec3;
     model: mat4;
 
-    constructor(position: vec3, theta: number) {
+    constructor(position: vec3) {
         this.position = position;
         this.model = mat4.create();
     }

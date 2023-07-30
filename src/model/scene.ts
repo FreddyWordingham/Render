@@ -1,49 +1,86 @@
 import { mat4, vec3 } from "gl-matrix";
 
 import { Camera } from "../view/camera";
+import { ObjectKinds, RenderData } from "./definitions";
+import { Quad } from "./quad";
 import { Tri } from "./tri";
 
 export class Scene {
     tris: Tri[];
+    quads: Quad[];
     cameras: Camera[];
     object_data: Float32Array;
-    model_count: number;
 
     constructor(num_models: number) {
         this.tris = [];
+        this.quads = [];
         this.object_data = new Float32Array(16 * num_models);
-        this.model_count = 0;
 
-        // Triangles
-        this.tris = [];
-
-        const number_per_side = 9;
-        for (let x = -number_per_side; x < number_per_side; ++x) {
-            for (let y = -number_per_side; y < number_per_side; ++y) {
-                this.tris.push(new Tri([x, y, 0], 0));
-
-                let blank_mat = mat4.create();
-                for (let i = 0; i < 16; ++i) {
-                    this.object_data[16 * this.model_count + i] = <number>blank_mat.at(i);
-                }
-                this.model_count += 1;
-            }
-        }
+        // Objects
+        this.init_triangles();
+        this.init_quadrangles();
 
         // Cameras
         this.cameras = [];
         this.cameras.push(new Camera([-2, 0, 0.5], 0, 0));
     }
 
+    init_triangles() {
+        this.tris = [];
+        let entity_index = 0;
+
+        const number_per_side = 9;
+        for (let x = -number_per_side; x <= number_per_side; ++x) {
+            for (let y = -number_per_side; y <= number_per_side; ++y) {
+                this.tris.push(new Tri([x, y, 0], 0));
+
+                let blank_mat = mat4.create();
+                for (let i = 0; i < 16; ++i) {
+                    this.object_data[16 * entity_index + i] = <number>blank_mat.at(i);
+                }
+                entity_index += 1;
+            }
+        }
+    }
+
+    // Note! Needs to run after init_triangles() because of order of object_data buffer.
+    init_quadrangles() {
+        this.quads = [];
+        let entity_index = this.tris.length;
+
+        const number_per_side = 9;
+        for (let x = -number_per_side; x <= number_per_side; ++x) {
+            for (let y = -number_per_side; y <= number_per_side; ++y) {
+                this.quads.push(new Quad([x, y, 0]));
+
+                let blank_mat = mat4.create();
+                for (let i = 0; i < 16; ++i) {
+                    this.object_data[16 * entity_index + i] = <number>blank_mat.at(i);
+                }
+                entity_index += 1;
+            }
+        }
+    }
+
     update() {
-        let n: number = 0;
+        let entity_index: number = 0;
+
         this.tris.forEach((tri) => {
             tri.update();
             let model = tri.get_model();
             for (let x = 0; x < 16; ++x) {
-                this.object_data[16 * n + x] = <number>model.at(x);
+                this.object_data[16 * entity_index + x] = <number>model.at(x);
             }
-            n += 1;
+            entity_index += 1;
+        });
+
+        this.quads.forEach((quad) => {
+            quad.update();
+            let model = quad.get_model();
+            for (let x = 0; x < 16; ++x) {
+                this.object_data[16 * entity_index + x] = <number>model.at(x);
+            }
+            entity_index += 1;
         });
 
         this.cameras.forEach((camera) => {
@@ -68,7 +105,14 @@ export class Scene {
         return this.cameras[0];
     }
 
-    get_transforms(): Float32Array {
-        return this.object_data;
+    get_renderables(): RenderData {
+        return {
+            view_transform: this.cameras[0].get_view_transform(),
+            model_transforms: this.object_data,
+            object_counts: {
+                [ObjectKinds.TRI]: this.tris.length,
+                [ObjectKinds.QUAD]: this.quads.length,
+            },
+        };
     }
 }

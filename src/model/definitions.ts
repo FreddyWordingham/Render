@@ -7,6 +7,6 @@ export enum ObjectKinds {
 
 export interface RenderData {
     view_transform: mat4;
-    model_transform: Float32Array;
+    model_transforms: Float32Array;
     object_counts: { [kind in ObjectKinds]: number };
 }

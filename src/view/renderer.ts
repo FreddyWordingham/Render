@@ -1,8 +1,9 @@
 import { mat4 } from "gl-matrix";
 
-import { Camera } from "./camera";
 import { Material } from "../model/material";
-import { Mesh } from "../model/mesh";
+import { ObjectKinds, RenderData } from "../model/definitions";
+import { QuadMesh } from "../model/quad_mesh";
+import { TriMesh } from "../model/tri_mesh";
 import shader from "../shaders/basic.wgsl";
 
 export class Renderer {
@@ -17,7 +18,8 @@ export class Renderer {
 
     // Pipeline objects
     uniformBuffer!: GPUBuffer;
-    bindGroup!: GPUBindGroup;
+    triBindGroup!: GPUBindGroup;
+    quadBindGroup!: GPUBindGroup;
     pipeline!: GPURenderPipeline;
 
     // Depth stencil
@@ -27,8 +29,10 @@ export class Renderer {
     depthStencilAttachment!: GPURenderPassDepthStencilAttachment;
 
     // Assets
-    mesh!: Mesh;
-    material!: Material;
+    tri_mesh!: TriMesh;
+    quad_mesh!: TriMesh;
+    tri_material!: Material;
+    quad_material!: Material;
     objectBuffer!: GPUBuffer;
 
     constructor(canvas: HTMLCanvasElement) {
@@ -88,9 +92,11 @@ export class Renderer {
     }
 
     async createAssets(num_models: number) {
-        this.mesh = new Mesh(this.device);
+        this.tri_mesh = new TriMesh(this.device);
+        this.quad_mesh = new QuadMesh(this.device);
 
-        this.material = new Material();
+        this.tri_material = new Material();
+        this.quad_material = new Material();
 
         const model_size = 64; // a single 4x4 matrix * (f32 == 4 bytes)
         const modelBufferDescriptor: GPUBufferDescriptor = {
@@ -99,7 +105,8 @@ export class Renderer {
         };
         this.objectBuffer = this.device.createBuffer(modelBufferDescriptor);
 
-        await this.material.init(this.device, "dist/textures/swirl.png");
+        await this.tri_material.init(this.device, "dist/textures/swirl.png");
+        await this.quad_material.init(this.device, "dist/textures/wood.png");
     }
 
     async makePipeline() {
@@ -136,7 +143,7 @@ export class Renderer {
             ],
         });
 
-        this.bindGroup = this.device.createBindGroup({
+        this.triBindGroup = this.device.createBindGroup({
             layout: bindGroupLayout,
             entries: [
                 {
@@ -147,11 +154,36 @@ export class Renderer {
                 },
                 {
                     binding: 1,
-                    resource: this.material.view,
+                    resource: this.tri_material.view,
                 },
                 {
                     binding: 2,
-                    resource: this.material.sampler,
+                    resource: this.tri_material.sampler,
+                },
+                {
+                    binding: 3,
+                    resource: {
+                        buffer: this.objectBuffer,
+                    },
+                },
+            ],
+        });
+        this.quadBindGroup = this.device.createBindGroup({
+            layout: bindGroupLayout,
+            entries: [
+                {
+                    binding: 0,
+                    resource: {
+                        buffer: this.uniformBuffer,
+                    },
+                },
+                {
+                    binding: 1,
+                    resource: this.quad_material.view,
+                },
+                {
+                    binding: 2,
+                    resource: this.quad_material.sampler,
                 },
                 {
                     binding: 3,
@@ -172,7 +204,7 @@ export class Renderer {
                     code: shader,
                 }),
                 entryPoint: "vs_main",
-                buffers: [this.mesh.bufferLayout],
+                buffers: [this.tri_mesh.bufferLayout],
             },
             primitive: {
                 topology: "triangle-list",
@@ -193,7 +225,7 @@ export class Renderer {
         });
     }
 
-    render(camera: Camera, transforms: Float32Array, models_count: number) {
+    render(renderables: RenderData) {
         // MVP
         const projection = mat4.create();
         const fovy = (45.0 * Math.PI) / 180.0;
@@ -202,9 +234,9 @@ export class Renderer {
         const far_clip = 100.0;
         mat4.perspective(projection, fovy, aspect_ratio, near_clip, far_clip);
 
-        const view = camera.get_view();
+        const view = renderables.view_transform;
 
-        this.device.queue.writeBuffer(this.objectBuffer, 0, transforms, 0, transforms.length);
+        this.device.queue.writeBuffer(this.objectBuffer, 0, renderables.model_transforms, 0, renderables.model_transforms.length);
         this.device.queue.writeBuffer(this.uniformBuffer, 64 * 0, <ArrayBuffer>view);
         this.device.queue.writeBuffer(this.uniformBuffer, 64 * 1, <ArrayBuffer>projection);
 
@@ -227,9 +259,21 @@ export class Renderer {
             depthStencilAttachment: this.depthStencilAttachment,
         });
         renderPass.setPipeline(this.pipeline);
-        renderPass.setVertexBuffer(0, this.mesh.buffer);
-        renderPass.setBindGroup(0, this.bindGroup);
-        renderPass.draw(3, models_count, 0, 0);
+
+        let objects_drawn: number = 0;
+
+        // Triangles
+        renderPass.setVertexBuffer(0, this.tri_mesh.buffer);
+        renderPass.setBindGroup(0, this.triBindGroup);
+        renderPass.draw(3, renderables.object_counts[ObjectKinds.TRI], 0, objects_drawn);
+        objects_drawn += renderables.object_counts[ObjectKinds.TRI];
+
+        // Quadrangles
+        renderPass.setVertexBuffer(0, this.quad_mesh.buffer);
+        renderPass.setBindGroup(0, this.quadBindGroup);
+        renderPass.draw(6, renderables.object_counts[ObjectKinds.QUAD], 0, objects_drawn);
+        objects_drawn += renderables.object_counts[ObjectKinds.QUAD];
+
         renderPass.end();
 
         this.device.queue.submit([commandEncoder.finish()]);
