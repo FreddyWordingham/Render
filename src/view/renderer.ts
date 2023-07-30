@@ -1,4 +1,4 @@
-import { mat4, vec3 } from "gl-matrix";
+import { mat4 } from "gl-matrix";
 
 import { Camera } from "./camera";
 import { Material } from "../model/material";
@@ -104,7 +104,7 @@ export class Renderer {
 
     async makePipeline() {
         this.uniformBuffer = this.device.createBuffer({
-            size: 2 * 64, // two 4x4 matricies * (f32 == 4 bytes)
+            size: 2 * 64, // two 4x4 matrices * (f32 == 4 bytes)
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 

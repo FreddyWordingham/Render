@@ -1,8 +1,8 @@
-import { vec3, mat4 } from "gl-matrix";
+import { mat4, vec3 } from "gl-matrix";
 
 import { degToRad } from "../utility/math";
 
-export class Transform {
+export class Tri {
     position: vec3;
     eulers: vec3; // Rotations in degrees around x, y, z
     model: mat4;

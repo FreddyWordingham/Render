@@ -1,26 +1,26 @@
 import { mat4, vec3 } from "gl-matrix";
 
 import { Camera } from "../view/camera";
-import { Transform } from "./transform";
+import { Tri } from "./tri";
 
 export class Scene {
-    transforms: Transform[];
+    tris: Tri[];
     cameras: Camera[];
     object_data: Float32Array;
     model_count: number;
 
     constructor(num_models: number) {
-        this.transforms = [];
+        this.tris = [];
         this.object_data = new Float32Array(16 * num_models);
         this.model_count = 0;
 
-        // Transforms
-        this.transforms = [];
+        // Triangles
+        this.tris = [];
 
         const number_per_side = 9;
         for (let x = -number_per_side; x < number_per_side; ++x) {
             for (let y = -number_per_side; y < number_per_side; ++y) {
-                this.transforms.push(new Transform([x, y, 0], 0));
+                this.tris.push(new Tri([x, y, 0], 0));
 
                 let blank_mat = mat4.create();
                 for (let i = 0; i < 16; ++i) {
@@ -37,9 +37,9 @@ export class Scene {
 
     update() {
         let n: number = 0;
-        this.transforms.forEach((transform) => {
-            transform.update();
-            let model = transform.get_model();
+        this.tris.forEach((tri) => {
+            tri.update();
+            let model = tri.get_model();
             for (let x = 0; x < 16; ++x) {
                 this.object_data[16 * n + x] = <number>model.at(x);
             }
